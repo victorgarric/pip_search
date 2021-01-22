@@ -19,7 +19,7 @@ setuptools.setup(
     python_requires='>=3.',
 	entry_points={
         "console_scripts": [
-            "pip_search=pip_search.pip_search:search",
+            "pip_search=pip_search.pip_search:main",
         ],
     },
 )
