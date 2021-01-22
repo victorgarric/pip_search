@@ -5,9 +5,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="pip_search",
-    version="0.0.4",
+    version="0.0.5",
     author="Victor Garric",
     author_email="victor.garric@gmail.com",
+    url='https://github.com/victorgarric/pip_search',
     description="A package to search like pip used to via PyPi",
     packages=setuptools.find_packages(),
 	install_requires=['tabulate'],
