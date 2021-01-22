@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="pip_search",
-    version="0.0.2",
+    version="0.0.4",
     author="Victor Garric",
     author_email="victor.garric@gmail.com",
     description="A package to search like pip used to via PyPi",
