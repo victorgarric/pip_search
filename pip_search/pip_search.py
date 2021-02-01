@@ -1,5 +1,6 @@
 import sys
 from urllib import request
+from bs4 import BeautifulSoup
 from tabulate import tabulate
 
 def usage():
@@ -20,20 +21,19 @@ def search () :
 	f = request.urlopen('https://pypi.org/search/?q=%s' % keyword)
 	raw_text=str(f.read())
 
-	raw_names=raw_text.split('<span class="package-snippet__name">')[1:-2]
-	names=[]
-	for name in raw_names :
-		names.append(name.split('</span>')[0])
+	soup = BeautifulSoup(raw_text, 'html.parser')
+ 
+	rows = [
+		['Name', 'Description'],
+		['', '']
+	]
 
+	for package in soup.find_all('a', 'package-snippet'):
+		name = package.find('span', 'package-snippet__name').text
+		description = package.find('p', 'package-snippet__description').text
+		rows.append([name, description])
 
-	raw_desc=raw_text.split('<p class="package-snippet__description">')[1:-2]
-	descs=[]
-	for desc in raw_desc :
-		descs.append(desc.split('</p>')[0])
-
-	header=[['Name', 'Description'],['','']]
-	rows=[[names[i],descs[i]] for i in range(len(names))]
-	print(tabulate(header+rows))
+	print(tabulate(rows))
 
 if __name__ == '__main__':
 	main()
