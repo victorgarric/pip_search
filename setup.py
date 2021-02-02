@@ -11,7 +11,7 @@ setuptools.setup(
     url='https://github.com/victorgarric/pip_search',
     description="A package to search like pip used to via PyPi",
     packages=setuptools.find_packages(),
-	install_requires=['tabulate'],
+	install_requires=['tabulate', 'beautifulsoup4'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
