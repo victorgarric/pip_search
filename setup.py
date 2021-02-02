@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="pip_search",
-    version="0.0.5",
+    version="0.0.6",
     author="Victor Garric",
     author_email="victor.garric@gmail.com",
     url='https://github.com/victorgarric/pip_search',
