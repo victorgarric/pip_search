@@ -8,7 +8,7 @@ def main():
     ap.add_argument('query', nargs='+', type=str,
                     help='terms to search pypi.org package repository')
     args = ap.parse_args()
-    search(query=' '.join(args.query), pages=args.pages)
+    search(query=' '.join(args.query))
 
 
 if __name__ == '__main__':
