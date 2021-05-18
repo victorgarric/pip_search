@@ -15,7 +15,7 @@ alias pip='function _pip(){
 ```
 Then run with `pip search`
 
-![https://raw.githubusercontent.com/victorgarric/pip_search/main/screenshot.png](https://raw.githubusercontent.com/victorgarric/pip_search/main/screenshot.png)
+![https://raw.githubusercontent.com/kkatayama/pip_search/main/screenshot.png](https://raw.githubusercontent.com/kkatayama/pip_search/main/screenshot.png)
 
 Hold the **command** or **ctrl** key to click on the folder icons as a hyperlink.
 
