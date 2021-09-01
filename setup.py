@@ -17,7 +17,7 @@ setup(
     long_description=README,
     long_description_content_type='text/markdown',
     packages=find_packages(exclude=("tests",)),
-    install_requires=['bs4', 'requests', 'rich'],
+    install_requires=['bs4', 'requests', 'rich', 'prompt_toolkit'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
