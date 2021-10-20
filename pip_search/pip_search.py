@@ -6,7 +6,7 @@ import requests
 import re
 
 
-def search(query: str):
+def search(query: str, opts: dict = {}):
     api_url = 'https://pypi.org/search/'
     snippets = []
     s = requests.Session()
@@ -17,6 +17,9 @@ def search(query: str):
         snippets += soup.select('a[class*="snippet"]')
         if not hasattr(s, 'start_url'):
             s.start_url = r.url.rsplit('&page', maxsplit=1).pop(0)
+
+    if 'sort' in opts and opts.sort:
+        snippets = sorted(snippets, key=lambda e: e.get_text())
 
     table = Table(title=f'[not italic]:snake:[/] [bold][magenta]{s.start_url} [not italic]:snake:[/]')
     table.add_column('Package', style='cyan', no_wrap=True)
