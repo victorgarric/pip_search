@@ -18,8 +18,14 @@ def search(query: str, opts: dict = {}):
         if not hasattr(s, 'start_url'):
             s.start_url = r.url.rsplit('&page', maxsplit=1).pop(0)
 
-    if 'sort' in opts and opts.sort:
-        snippets = sorted(snippets, key=lambda e: e.get_text())
+    if 'sort' in opts:
+        if opts.sort == 'name':
+            snippets = sorted(snippets, key=lambda s: s.select_one('span[class*="'+opts.sort+'"]').text.strip() )
+        elif opts.sort == 'version':
+            from distutils.version import StrictVersion
+            snippets = sorted(snippets, key=lambda s: StrictVersion(s.select_one('span[class*="'+opts.sort+'"]').text.strip()) )
+        elif opts.sort == 'released':
+            snippets = sorted(snippets, key=lambda s: s.select_one('span[class*="'+opts.sort+'"]').find("time")["datetime"] )
 
     table = Table(title=f'[not italic]:snake:[/] [bold][magenta]{s.start_url} [not italic]:snake:[/]')
     table.add_column('Package', style='cyan', no_wrap=True)
