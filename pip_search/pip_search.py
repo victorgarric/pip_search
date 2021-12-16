@@ -30,9 +30,9 @@ def search(query: str):
         version = re.sub(r"\s+", " ", snippet.select_one('span[class*="version"]').text.strip())
         checked_version = check_version(package)
         if checked_version == version:
-            version = f"[bold green]== {version}[/]"
+            version = f"[bold green]{version} ==[/]"
         elif checked_version is not False:
-            version = f"[bold purple]{checked_version}[/] ^{version}"
+            version = f"{version} > [bold purple]{checked_version}[/]"
         released = re.sub(r"\s+", " ", snippet.select_one('span[class*="released"]').text.strip())
         description = re.sub(r"\s+", " ", snippet.select_one('p[class*="description"]').text.strip())
         emoji = ':open_file_folder:'
