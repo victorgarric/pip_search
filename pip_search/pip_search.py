@@ -41,7 +41,7 @@ def search(query: str):
         )
         checked_version = check_version(package)
         if checked_version == version:
-            version = f"[bold green]{version} ==[/]"
+            version = f"[bold cyan]{version} ==[/]"
         elif checked_version is not False:
             version = f"{version} > [bold purple]{checked_version}[/]"
         released = re.sub(
