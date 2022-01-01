@@ -13,7 +13,28 @@ alias pip='function _pip(){
 };_pip'
 
 ```
-Then run with `pip search`
+For Powershell users, the following can be added to your `$PROFILE`:
+```ps1
+Function PipSearchProxy() {
+	param(
+         [string]
+         [Parameter(Position=0)]
+         $firstArg,
+         [string[]]
+         [Parameter(Position=1, ValueFromRemainingArguments)]
+         $allRemaining)
+	if ($firstArg -eq "search") {
+		& pip_search @allRemaining
+	} else {
+		& pip.exe $firstArg @allRemaining
+	}
+}
+Set-Alias -Name pip -Value PipSearchProxy
+```
+
+
+
+Now you can run it with `pip search`
 
 ![https://raw.githubusercontent.com/kkatayama/pip_search/master/screenshot.png](https://raw.githubusercontent.com/kkatayama/pip_search/master/screenshot.png)
 
