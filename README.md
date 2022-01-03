@@ -21,9 +21,9 @@ Hold the **command** or **ctrl** key to click on the folder icons as a hyperlink
 
 ---
 Dependancies
-    - bs4
-    - rich
-    - requests
+* bs4
+* rich
+* requests
 
 ---
 0.0.8 Update:
