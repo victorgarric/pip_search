@@ -27,7 +27,9 @@ Dependancies
 
 ---
 0.0.8 Update:
-- Updated for better compatibility
+- Updated for better compatibility and better display
+
+Changes thanks to @RCristiano
 
 ---
 0.0.7 Update:
