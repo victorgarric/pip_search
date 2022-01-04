@@ -7,7 +7,7 @@ import requests
 import re
 
 
-def search(query: str):
+def search(query: str, opts: dict = {}):
     api_url = "https://pypi.org/search/"
     snippets = []
     s = requests.Session()
@@ -18,6 +18,26 @@ def search(query: str):
         snippets += soup.select('a[class*="snippet"]')
         if not hasattr(s, "start_url"):
             s.start_url = r.url.rsplit("&page", maxsplit=1).pop(0)
+
+    if "sort" in opts:
+        if opts.sort == "name":
+            snippets = sorted(
+                snippets,
+                key=lambda s: s.select_one('span[class*="name"]').text.strip()
+            )
+        elif opts.sort == "version":
+            from distutils.version import StrictVersion
+            snippets = sorted(
+                snippets,
+                key=lambda s: StrictVersion(s.select_one(
+                    'span[class*="version"]').text.strip())
+            )
+        elif opts.sort == "released":
+            snippets = sorted(
+                snippets,
+                key=lambda s: s.select_one(
+                    'span[class*="released"]').find("time")["datetime"]
+            )
 
     table = Table(
         title=(
