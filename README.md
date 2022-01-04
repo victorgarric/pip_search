@@ -26,6 +26,12 @@ Dependancies
 * requests
 
 ---
+0.0.9 Update:
+- Hotfix for Python 3.8 to 3.10 compatibility
+
+Changes thanks to @jiyeqian
+
+---
 0.0.8 Update:
 - Updated for better compatibility and better display
 
