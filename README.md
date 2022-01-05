@@ -7,6 +7,11 @@ Install with `pip install pip_search`
 
 Use with `pip_search anything`
 
+You can specify sorting options : 
+- `pip_search -s name`
+- `pip_search -s version`
+- `pip_search -s released`
+
 To use as the traditional `pip search <keywords>` method, add this alias to your **.zshrc, .bashrc, .bash_profile, etc.**
 ```bash
 alias pip='function _pip(){
@@ -29,6 +34,10 @@ Hold the **command** or **ctrl** key to click on the folder icons as a hyperlink
 * requests
 
 ## Updates log
+
+- 0.0.10
+    - Added sorting options
+    - Changes thanks to @dsoares
 
 - 0.0.9 
     - Hotfix for Python 3.8 to 3.10 compatibility
