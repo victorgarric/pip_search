@@ -37,7 +37,7 @@ Hold the **command** or **ctrl** key to click on the folder icons as a hyperlink
 
 - 0.0.10
     - Added sorting options
-    - Changes thanks to @dsoares
+    - Changes thanks to @dsoares and @genevera 
 
 - 0.0.9 
     - Hotfix for Python 3.8 to 3.10 compatibility
