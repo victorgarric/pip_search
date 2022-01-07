@@ -39,49 +39,70 @@ def search(query: str, opts: dict = {}):
                     'span[class*="released"]').find("time")["datetime"]
             )
 
-    table = Table(
-        title=(
-            f"[not italic]:snake:[/] [bold][magenta]{s.start_url} "
-            "[not italic]:snake:[/]"
-        )
-    )
-    table.add_column("Package", style="cyan", no_wrap=True)
-    table.add_column("Version", style="bold yellow")
-    table.add_column("Released", style="bold green")
-    table.add_column("Description", style="bold blue")
+    searchresults = []
     for snippet in snippets:
-        link = urljoin(api_url, snippet.get("href"))
-        package = re.sub(
+        res = {}
+        res['link'] = urljoin(api_url, snippet.get("href"))
+        res['package'] = re.sub(
             r"\s+", " ", snippet.select_one('span[class*="name"]').text.strip()
         )
-        version = re.sub(
+        res['version'] = re.sub(
             r"\s+",
             " ",
             snippet.select_one('span[class*="version"]').text.strip(),
         )
-        checked_version = check_version(package)
-        if checked_version == version:
-            version = f"[bold cyan]{version} ==[/]"
+        checked_version = check_version(res['package'])
+        if checked_version == res['version']:
+            res['version'] = f"[bold cyan]{res['version']} ==[/]"
         elif checked_version is not False:
-            version = f"{version} > [bold purple]{checked_version}[/]"
-        released = re.sub(
+            res['version'] = \
+                f"{res['version']} > [bold purple]{checked_version}[/]"
+        res['released'] = re.sub(
             r"\s+",
             " ",
             snippet.select_one('span[class*="released"]').text.strip(),
         )
-        description = re.sub(
+        res['description'] = re.sub(
             r"\s+",
             " ",
             snippet.select_one('p[class*="description"]').text.strip(),
         )
-        emoji = ":open_file_folder:"
+        searchresults.append(res)
+
+    return s.start_url, searchresults
+
+
+def print_results(query: str, opts: dict = {}):
+    title, searchresults = search(query, opts)
+
+    if opts.brief:
+        for res in searchresults:
+            print(f"{res['package']} ({res['version']}): {res['description']}")
+        return
+
+    table = Table(
+        title=(
+            f"[not italic]:snake:[/] [bold][magenta]{title} "
+            "[not italic]:snake:[/]"
+        )
+    )
+
+    emoji = ":open_file_folder:"
+
+    table.add_column("Package", style="cyan", no_wrap=True)
+    table.add_column("Version", style="bold yellow")
+    table.add_column("Released", style="bold green")
+    table.add_column("Description", style="bold blue")
+
+    for res in searchresults:
         table.add_row(
-            f"[link={link}]{emoji}[/link] {package}",
-            version,
-            released,
-            description,
+            f"[link={res['link']}]{emoji}[/link] {res['package']}",
+            res['version'],
+            res['released'],
+            res['description']
         )
 
     console = Console()
     console.print(table)
-    return
+
+
