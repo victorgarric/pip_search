@@ -1,4 +1,5 @@
 import re
+from argparse import Namespace
 from datetime import datetime
 from typing import Generator
 from urllib.parse import urljoin
@@ -51,7 +52,9 @@ class Package:
 config = Config()
 
 
-def search(query: str, opts: dict = {}) -> Generator[Package, None, None]:
+def search(
+    query: str, opts: dict | Namespace = {}
+) -> Generator[Package, None, None]:
     """Search for packages matching the query
 
     Yields:
