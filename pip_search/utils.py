@@ -5,8 +5,11 @@ except ImportError:
     from pkg_resources import get_distribution as distribution
 
 
-def check_version(package: str):
+def check_version(package: str) -> str | bool:
+    """Check if package is installed and return version."""
     try:
-        return distribution(package).version
+        installed = distribution(package)
     except PackageNotFoundError:
         return False
+    else:
+        return installed.version
