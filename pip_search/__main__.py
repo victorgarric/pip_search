@@ -37,6 +37,13 @@ def main():
         action="version",
         version=f"%(prog)s {__version__}",
     )
+    ap.add_argument(
+        "--date_format",
+        type=str,
+        default="%b %-d, %Y",
+        nargs="?",
+        help="format for release date, (default: %(default)s)",
+    )
     args = ap.parse_args()
     query = " ".join(args.query)
     result = search(query, opts=args)
@@ -67,7 +74,7 @@ def main():
         table.add_row(
             f"[link={package.link}]{emoji}[/link] {package.name}",
             package.version,
-            package.released_date_str(),
+            package.released_date_str(args.date_format),
             package.description,
         )
     console = Console()

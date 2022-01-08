@@ -42,10 +42,10 @@ class Package:
         """Return the released date as a datetime object"""
         return datetime.strptime(self.released, "%Y-%m-%dT%H:%M:%S%z")
 
-    def released_date_str(self) -> str:
+    def released_date_str(self, date_format: str = Config.date_format) -> str:
         """Return the released date as a string
         formatted according to Config.date_format"""
-        return self.released_date.strftime(Config.date_format)
+        return self.released_date.strftime(date_format)
 
 
 config = Config()
