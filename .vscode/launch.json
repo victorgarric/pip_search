@@ -10,7 +10,11 @@
             "request": "launch",
             "module": "pip_search",
             "args": [
-                "mypy + test / another"
+                "--sort",
+                "name",
+                "bs4 ",
+                "--date_format",
+                "%Y-%m-%d",
             ]
         }
     ]
