@@ -1,56 +1,95 @@
-from rich.console import Console
-from rich.table import Table
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin
-from .utils import check_version
-import requests
 import re
+from datetime import datetime
+from typing import Generator
+from urllib.parse import urljoin
+
+import requests
+from bs4 import BeautifulSoup
 
 
-def search(query: str, opts: dict = {}):
+class Config:
+    """Configuration class"""
+
     api_url = "https://pypi.org/search/"
+    page_size = 2
+    sort_by = "name"
+    date_format = "%b %-d, %Y"
+
+
+class Package:
+    """Package class"""
+
+    def __init__(
+        self,
+        name: str,
+        version: str,
+        released: str,
+        description: str,
+        link: str = None,
+    ):
+        self.name = name
+        self.version = version
+        self.released = released
+        self.description = description
+        self.link = link or urljoin(Config.api_url, f"{name}/{version}/")
+
+    def __str__(self):
+        """Return a string representation of the package"""
+        return f"{self.name} {self.version}"
+
+    @property
+    def released_date(self):
+        """Return the released date as a datetime object"""
+        return datetime.strptime(self.released, "%Y-%m-%dT%H:%M:%S%z")
+
+    def released_date_str(self):
+        """Return the released date as a string
+        formatted according to Config.date_format"""
+        return self.released_date.strftime(Config.date_format)
+
+
+config = Config()
+
+
+def search(query: str, opts: dict = {}) -> Generator[Package, None, None]:
+    """Search for packages matching the query
+
+    Yields:
+        Package: package object
+    """
     snippets = []
     s = requests.Session()
-    for page in range(1, 3):
+    for page in range(1, config.page_size + 1):
         params = {"q": query, "page": page}
-        r = s.get(api_url, params=params)
+        r = s.get(config.api_url, params=params)
         soup = BeautifulSoup(r.text, "html.parser")
         snippets += soup.select('a[class*="snippet"]')
-        if not hasattr(s, "start_url"):
-            s.start_url = r.url.rsplit("&page", maxsplit=1).pop(0)
 
     if "sort" in opts:
         if opts.sort == "name":
             snippets = sorted(
                 snippets,
-                key=lambda s: s.select_one('span[class*="name"]').text.strip()
+                key=lambda s: s.select_one('span[class*="name"]').text.strip(),
             )
         elif opts.sort == "version":
             from distutils.version import StrictVersion
+
             snippets = sorted(
                 snippets,
-                key=lambda s: StrictVersion(s.select_one(
-                    'span[class*="version"]').text.strip())
+                key=lambda s: StrictVersion(
+                    s.select_one('span[class*="version"]').text.strip()
+                ),
             )
         elif opts.sort == "released":
             snippets = sorted(
                 snippets,
-                key=lambda s: s.select_one(
-                    'span[class*="released"]').find("time")["datetime"]
+                key=lambda s: s.select_one('span[class*="released"]').find(
+                    "time"
+                )["datetime"],
             )
 
-    table = Table(
-        title=(
-            f"[not italic]:snake:[/] [bold][magenta]{s.start_url} "
-            "[not italic]:snake:[/]"
-        )
-    )
-    table.add_column("Package", style="cyan", no_wrap=True)
-    table.add_column("Version", style="bold yellow")
-    table.add_column("Released", style="bold green")
-    table.add_column("Description", style="bold blue")
     for snippet in snippets:
-        link = urljoin(api_url, snippet.get("href"))
+        link = urljoin(config.api_url, snippet.get("href"))
         package = re.sub(
             r"\s+", " ", snippet.select_one('span[class*="name"]').text.strip()
         )
@@ -59,29 +98,16 @@ def search(query: str, opts: dict = {}):
             " ",
             snippet.select_one('span[class*="version"]').text.strip(),
         )
-        checked_version = check_version(package)
-        if checked_version == version:
-            version = f"[bold cyan]{version} ==[/]"
-        elif checked_version is not False:
-            version = f"{version} > [bold purple]{checked_version}[/]"
         released = re.sub(
             r"\s+",
             " ",
-            snippet.select_one('span[class*="released"]').text.strip(),
+            snippet.select_one('span[class*="released"]').find("time")[
+                "datetime"
+            ],
         )
         description = re.sub(
             r"\s+",
             " ",
             snippet.select_one('p[class*="description"]').text.strip(),
         )
-        emoji = ":open_file_folder:"
-        table.add_row(
-            f"[link={link}]{emoji}[/link] {package}",
-            version,
-            released,
-            description,
-        )
-
-    console = Console()
-    console.print(table)
-    return
+        yield Package(package, version, released, description, link)
