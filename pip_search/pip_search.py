@@ -33,16 +33,16 @@ class Package:
         self.description = description
         self.link = link or urljoin(Config.api_url, f"{name}/{version}/")
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return a string representation of the package"""
         return f"{self.name} {self.version}"
 
     @property
-    def released_date(self):
+    def released_date(self) -> datetime:
         """Return the released date as a datetime object"""
         return datetime.strptime(self.released, "%Y-%m-%dT%H:%M:%S%z")
 
-    def released_date_str(self):
+    def released_date_str(self) -> str:
         """Return the released date as a string
         formatted according to Config.date_format"""
         return self.released_date.strftime(Config.date_format)
