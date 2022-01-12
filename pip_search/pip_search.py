@@ -11,11 +11,14 @@ from bs4 import BeautifulSoup
 class Config:
     """Configuration class"""
 
-    api_url = "https://pypi.org/search/"
-    page_size = 2
-    sort_by = "name"
-    date_format = "%b %-d, %Y"
+    api_url: str = "https://pypi.org/search/"
+    page_size: int = 2
+    sort_by: str = "name"
+    date_format: str = "%b %-d, %Y"
+    link_defualt_format: str = "https://pypi.org/project/{package.name}"
 
+
+config = Config()
 
 class Package:
     """Package class"""
@@ -47,9 +50,6 @@ class Package:
         """Return the released date as a string
         formatted according to Config.date_format"""
         return self.released_date.strftime(date_format)
-
-
-config = Config()
 
 
 def search(
