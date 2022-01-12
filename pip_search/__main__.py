@@ -5,8 +5,7 @@ from urllib.parse import urlencode
 from rich.console import Console
 from rich.table import Table
 
-import pip_search
-from pip_search.pip_search import search
+from pip_search.pip_search import config, search
 
 from . import __version__
 from .utils import check_version
@@ -54,7 +53,7 @@ def main():
     table = Table(
         title=(
             "[not italic]:snake:[/] [bold][magenta]"
-            f"{pip_search.config.api_url}?{urlencode({'q': query})}"
+            f"{config.api_url}?{urlencode({'q': query})}"
             "[/] [not italic]:snake:[/]"
         )
     )
