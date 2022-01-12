@@ -1,5 +1,6 @@
 import re
 from argparse import Namespace
+from dataclasses import InitVar, dataclass
 from datetime import datetime
 from typing import Generator
 from urllib.parse import urljoin
@@ -20,35 +21,30 @@ class Config:
 
 config = Config()
 
+
+@dataclass
 class Package:
     """Package class"""
 
-    def __init__(
-        self,
-        name: str,
-        version: str,
-        released: str,
-        description: str,
-        link: str = None,
-    ):
-        self.name = name
-        self.version = version
-        self.released = released
-        self.description = description
-        self.link = link or urljoin(Config.api_url, f"{name}/{version}/")
+    name: str
+    version: str
+    released: str
+    description: str
+    link: InitVar[str] = None
 
-    def __str__(self) -> str:
-        """Return a string representation of the package"""
-        return f"{self.name} {self.version}"
+    def __post_init__(self, link: str = None):
+        self.link = link or config.link_defualt_format.format(package=self)
+        self.released_date = datetime.strptime(
+            self.released, "%Y-%m-%dT%H:%M:%S%z"
+        )
 
-    @property
-    def released_date(self) -> datetime:
-        """Return the released date as a datetime object"""
-        return datetime.strptime(self.released, "%Y-%m-%dT%H:%M:%S%z")
+    def released_date_str(self, date_format: str = config.date_format) -> str:
+        """Return the released date as a string formatted
+        according to date_formate ou Config.date_format (default)
 
-    def released_date_str(self, date_format: str = Config.date_format) -> str:
-        """Return the released date as a string
-        formatted according to Config.date_format"""
+        Returns:
+            str: Formatted date string
+        """
         return self.released_date.strftime(date_format)
 
 
