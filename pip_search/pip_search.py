@@ -71,11 +71,11 @@ def search(
                 key=lambda s: s.select_one('span[class*="name"]').text.strip(),
             )
         elif opts.sort == "version":
-            from distutils.version import StrictVersion
+            from pkg_resources import parse_version
 
             snippets = sorted(
                 snippets,
-                key=lambda s: StrictVersion(
+                key=lambda s: parse_version(
                     s.select_one('span[class*="version"]').text.strip()
                 ),
             )
