@@ -2,7 +2,7 @@ import re
 from argparse import Namespace
 from dataclasses import InitVar, dataclass
 from datetime import datetime
-from typing import Generator
+from typing import Generator, Union
 from urllib.parse import urljoin
 
 import requests
@@ -49,7 +49,7 @@ class Package:
 
 
 def search(
-    query: str, opts: dict | Namespace = {}
+    query: str, opts: Union[dict, Namespace] = {}
 ) -> Generator[Package, None, None]:
     """Search for packages matching the query
 
