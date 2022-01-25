@@ -22,6 +22,24 @@ alias pip='function _pip(){
 };_pip'
 
 ```
+
+For fish users, run on fish shell:
+
+```fish
+function pip --wraps="pip"
+    set command $argv[1]
+    set -e argv[1]
+    switch "$command"
+        case 'search'
+            pip_search $argv
+        case '*'
+            command pip $command $argv
+    end
+end
+
+funcsave pip
+````
+
 Then run with `pip search`
 
 ![https://raw.githubusercontent.com/kkatayama/pip_search/master/screenshot.png](https://raw.githubusercontent.com/kkatayama/pip_search/master/screenshot.png)
