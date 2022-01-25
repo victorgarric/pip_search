@@ -1,5 +1,6 @@
 import pathlib
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -12,18 +13,18 @@ setup(
     version="0.0.10",
     author="Victor Garric",
     author_email="victor.garric@gmail.com",
-    url='https://github.com/victorgarric/pip_search',
+    url="https://github.com/victorgarric/pip_search",
     description="A package to search like pip used to via PyPi",
     long_description=README,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests",)),
-    install_requires=['bs4', 'requests', 'rich'],
+    install_requires=["bs4", "requests", "rich"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.',
+    python_requires=">=3.2",
     entry_points={
         "console_scripts": [
             "pip_search=pip_search.__main__:main",
