@@ -53,6 +53,9 @@ Hold the **command** or **ctrl** key to click on the folder icons as a hyperlink
 
 ## Updates log
 
+- 0.0.11
+    - Added date format options
+
 - 0.0.10
     - Added sorting options
     - Changes thanks to @dsoares and @genevera 
