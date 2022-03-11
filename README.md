@@ -1,6 +1,6 @@
 # pip_search
 
-__Warping the needs of a "pip search" command necessity through PyPi.org__
+__Wrapping the needs of a "pip search" command necessity through PyPi.org__
 
 ## Installation & Usage
 Install with `pip install pip_search`
