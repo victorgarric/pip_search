@@ -14,7 +14,7 @@ setup(
     author="Victor Garric",
     author_email="victor.garric@gmail.com",
     url="https://github.com/victorgarric/pip_search",
-    description="A package to search like pip used to via PyPi",
+    description="A package to search like pip used to, via PyPi",
     long_description=README,
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests",)),
