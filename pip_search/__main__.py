@@ -39,7 +39,7 @@ def main():
     ap.add_argument(
         "--date_format",
         type=str,
-        default="%b %-d, %Y",
+        default="%d-%m-%Y",
         nargs="?",
         help="format for release date, (default: %(default)s)",
     )

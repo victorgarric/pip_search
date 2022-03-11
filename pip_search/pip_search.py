@@ -15,7 +15,7 @@ class Config:
     api_url: str = "https://pypi.org/search/"
     page_size: int = 2
     sort_by: str = "name"
-    date_format: str = "%b %-d, %Y"
+    date_format: str = "%d-%-m-%Y"
     link_defualt_format: str = "https://pypi.org/project/{package.name}"
 
 
