@@ -62,13 +62,13 @@ def search(
         params = {"q": query, "page": page}
         r = s.get(config.api_url, params=params)
         soup = BeautifulSoup(r.text, "html.parser")
-        snippets += soup.select('a[class*="snippet"]')
+        snippets += soup.select('a[class*="package-snippet"]')
 
     if "sort" in opts:
         if opts.sort == "name":
             snippets = sorted(
                 snippets,
-                key=lambda s: s.select_one('span[class*="name"]').text.strip(),
+                key=lambda s: s.select_one('span[class*="package-snippet__name"]').text.strip(),
             )
         elif opts.sort == "version":
             from pkg_resources import parse_version
@@ -76,13 +76,13 @@ def search(
             snippets = sorted(
                 snippets,
                 key=lambda s: parse_version(
-                    s.select_one('span[class*="version"]').text.strip()
+                    s.select_one('span[class*="package-snippet__version"]').text.strip()
                 ),
             )
         elif opts.sort == "released":
             snippets = sorted(
                 snippets,
-                key=lambda s: s.select_one('span[class*="released"]').find(
+                key=lambda s: s.select_one('span[class*="package-snippet__created"]').find(
                     "time"
                 )["datetime"],
             )
@@ -90,23 +90,23 @@ def search(
     for snippet in snippets:
         link = urljoin(config.api_url, snippet.get("href"))
         package = re.sub(
-            r"\s+", " ", snippet.select_one('span[class*="name"]').text.strip()
+            r"\s+", " ", snippet.select_one('span[class*="package-snippet__name"]').text.strip()
         )
         version = re.sub(
             r"\s+",
             " ",
-            snippet.select_one('span[class*="version"]').text.strip(),
+            snippet.select_one('span[class*="package-snippet__version"]').text.strip(),
         )
         released = re.sub(
             r"\s+",
             " ",
-            snippet.select_one('span[class*="released"]').find("time")[
+            snippet.select_one('span[class*="package-snippet__created"]').find("time")[
                 "datetime"
             ],
         )
         description = re.sub(
             r"\s+",
             " ",
-            snippet.select_one('p[class*="description"]').text.strip(),
+            snippet.select_one('p[class*="package-snippet__description"]').text.strip(),
         )
         yield Package(package, version, released, description, link)
