@@ -28,24 +28,24 @@ class Package:
 
     name: str
     version: str
-    created: str
+    released: str
     description: str
     link: InitVar[str] = None
 
     def __post_init__(self, link: str = None):
         self.link = link or config.link_defualt_format.format(package=self)
-        self.created_date = datetime.strptime(
-            self.created, "%Y-%m-%dT%H:%M:%S%z"
+        self.released_date = datetime.strptime(
+            self.released, "%Y-%m-%dT%H:%M:%S%z"
         )
 
-    def created_date_str(self, date_format: str = config.date_format) -> str:
-        """Return the created date as a string formatted
+    def released_date_str(self, date_format: str = config.date_format) -> str:
+        """Return the released date as a string formatted
         according to date_formate ou Config.date_format (default)
 
         Returns:
             str: Formatted date string
         """
-        return self.created_date.strftime(date_format)
+        return self.released_date.strftime(date_format)
 
 
 def search(
@@ -79,7 +79,7 @@ def search(
                     s.select_one('span[class*="version"]').text.strip()
                 ),
             )
-        elif opts.sort == "created":
+        elif opts.sort == "released":
             snippets = sorted(
                 snippets,
                 key=lambda s: s.select_one('span[class*="created"]').find(
@@ -97,7 +97,7 @@ def search(
             " ",
             snippet.select_one('span[class*="version"]').text.strip(),
         )
-        created = re.sub(
+        released = re.sub(
             r"\s+",
             " ",
             snippet.select_one('span[class*="created"]').find("time")[
@@ -109,4 +109,4 @@ def search(
             " ",
             snippet.select_one('p[class*="description"]').text.strip(),
         )
-        yield Package(package, version, created, description, link)
+        yield Package(package, version, released, description, link)

@@ -21,7 +21,7 @@ def main():
         type=str,
         const="name",
         nargs="?",
-        choices=["name", "version", "created"],
+        choices=["name", "version", "released"],
         help="sort results by package name, version or \
                         release date (default: %(const)s)",
     )
@@ -59,7 +59,7 @@ def main():
     )
     table.add_column("Package", style="cyan", no_wrap=True)
     table.add_column("Version", style="bold yellow")
-    table.add_column("Created", style="bold green")
+    table.add_column("Released", style="bold green")
     table.add_column("Description", style="bold blue")
     emoji = ":open_file_folder:"
     for package in result:
@@ -73,7 +73,7 @@ def main():
         table.add_row(
             f"[link={package.link}]{emoji}[/link] {package.name}",
             package.version,
-            package.created_date_str(args.date_format),
+            package.released_date_str(args.date_format),
             package.description,
         )
     console = Console()
