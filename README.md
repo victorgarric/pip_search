@@ -53,6 +53,9 @@ Hold the **command** or **ctrl** key to click on the folder icons as a hyperlink
 
 ## Updates log
 
+- 0.0.12 
+    - Updated to comply with new PyPi.org format
+
 - 0.0.11
     - Added date format options
 
