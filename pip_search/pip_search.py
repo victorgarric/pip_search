@@ -82,7 +82,7 @@ def search(
         elif opts.sort == "released":
             snippets = sorted(
                 snippets,
-                key=lambda s: s.select_one('span[class*="released"]').find(
+                key=lambda s: s.select_one('span[class*="created"]').find(
                     "time"
                 )["datetime"],
             )
@@ -100,7 +100,7 @@ def search(
         released = re.sub(
             r"\s+",
             " ",
-            snippet.select_one('span[class*="released"]').find("time")[
+            snippet.select_one('span[class*="created"]').find("time")[
                 "datetime"
             ],
         )
