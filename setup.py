@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name="pip_search",
-    version="0.0.11",
+    version="0.0.12",
     author="Victor Garric",
     author_email="victor.garric@gmail.com",
     url="https://github.com/victorgarric/pip_search",
