@@ -100,6 +100,7 @@ def search(
         released = re.sub(
             r"\s+",
             " ",
+
             snippet.select_one('span[class*="package-snippet__created"]').find("time")[
                 "datetime"
             ],

@@ -46,7 +46,7 @@ Then run with `pip search`
 
 Hold the **command** or **ctrl** key to click on the folder icons as a hyperlink.
 
-## Dependancies
+## Dependencies
 * bs4
 * rich
 * requests
