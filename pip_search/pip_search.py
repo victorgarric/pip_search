@@ -11,6 +11,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 from bs4 import BeautifulSoup
 
+DEBUG = True
 
 class Config:
     """Configuration class"""
@@ -33,7 +34,6 @@ class Package:
     version: str
     released: str
     description: str
-    info_set: bool = False
     link: InitVar[str] = None
 
     def __post_init__(self, link: str = None):
@@ -45,6 +45,7 @@ class Package:
         self.forks: str = ''
         self.watchers: str = ''
         self.github_link: str = ''
+        self.info_set: bool = False
 
     def released_date_str(self, date_format: str = config.date_format) -> str:
         """Return the released date as a string formatted
@@ -56,11 +57,11 @@ class Package:
         return self.released_date.strftime(date_format)
 
     def set_gh_info(self, info):
-        self.info_set = True
         self.stars = info['stars']
         self.forks = info['forks']
         self.watchers = info['watchers']
         self.github_link = info['github_link']
+        self.info_set = True
 
 
 def search(
@@ -136,41 +137,52 @@ def search(
             pack.set_gh_info(info)
         yield pack #Package(package, version, released, description, link, links)
 
-def get_repo_info(repo, auth=None):
-    info = {'stars':'', 'forks':'', 'watchers':'', 'set':False}    
+def get_repo_info(repo, info, auth=None):
+    #info = {'stars':'', 'forks':'', 'watchers':'', 'set':False}
     if 'github' in repo:
         try:
-            reponame = repo.split('github.com/')[1].rstrip('/')            
+            reponame = repo.split('github.com/')[1].rstrip('/')
         except IndexError as e:
             logger.error(f'[r] err:{e} repo:{repo}')
             return info
         apiurl = f'https://api.github.com/repos/{reponame}'
         r = requests.get(apiurl, auth=auth)
-        if 'Not Found' in r.text:
-            logger.warning(f'[r] {r.status_code} r:{reponame} apiurl:{apiurl} not found' )
+        if r.status_code == 401:
+            if DEBUG:
+                logger.error(f'[r] autherr:401 repo:{repo} apiurl:{apiurl} a:{auth}')
             return info
-        if 'API rate limit exceeded' in r.text:
-            logger.warning(f'[r] {r.status_code} {reponame} apiurl:{apiurl} API rate limit exceeded')
+        if r.status_code == 404:
+            if DEBUG:
+                logger.warning(f'[r] {r.status_code} url:{repo} r:{reponame} apiurl:{apiurl} not found' )
             return info
-        try:
-            info['stars'] = str(r.json()["stargazers_count"])
-        except TypeError as e:
-            logger.error(f'[gri] {e} r:{r.status_code} len:{len(r.content)} apiurl:{apiurl} rj:{r.json()}')
-        info['forks'] = str(r.json()["forks_count"])
-        info['watchers'] = str(r.json()["watchers_count"])
-        info['github_link'] = repo
-        info['set'] = True
-        return info
-    else:
-        logger.warning(f'[gri] wrong url: {repo}')
-        return info
+        if r.status_code == 403:
+            if DEBUG:
+                logger.warning(f'[r] {r.status_code} {reponame} apiurl:{apiurl} API rate limit exceeded')
+            return info
+        if r.status_code == 200:
+            try:
+                info['stars'] = str(r.json()["stargazers_count"])
+            except TypeError as e:
+                logger.error(f'[gri] {e} r:{r.status_code} len:{len(r.content)} apiurl:{apiurl} rj:{r.json()}')
+            except KeyError as e:
+                logger.error(f'[gri] {e} r:{r.status_code} len:{len(r.content)} apiurl:{apiurl} rj:{r.json()}')
+            info['forks'] = str(r.json()["forks_count"])
+            info['watchers'] = str(r.json()["watchers_count"])
+            info['github_link'] = repo
+            info['set'] = True
+            return info
+        else:
+            if DEBUG:
+                logger.warning(f'[gri] {r.status_code} repo:{repo} apiurl:{apiurl}')
+    return info
 
 def get_github_info(repolink, authparam):
+    info = {'stars':'', 'forks':'', 'watchers':'', 'set':False}
     gh_link = get_links(repolink)
-    logger.debug(f'[ggi] repolink:{repolink} gh:{gh_link}')
-    github_link = gh_link['github']
-    homepage = gh_link['homepage']
-    info = get_repo_info(github_link,authparam)
+    if gh_link['github'] != '':
+        info = get_repo_info(gh_link['github'], info, authparam)
+        if DEBUG:
+            logger.debug(f'[ggi] repolink:{repolink} gh:{gh_link} i:{info}')
     return info
 
 def get_links(pkg_url):
@@ -179,7 +191,6 @@ def get_links(pkg_url):
     soup = BeautifulSoup(r.text, "html.parser")
     homepage = ''
     githublink = ''
-    docslink = ''
     try:
         homepage = soup.select_one('.vertical-tabs__tabs > div:nth-child(2) > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)',href=True).attrs['href']
         if 'github' in homepage:
@@ -187,12 +198,13 @@ def get_links(pkg_url):
             githublink = githublink.replace('/tags','')
             return {'github':githublink, 'homepage':homepage}
     except AttributeError as e:
-        logger.warning(f'[err] err:{e} pkg_url:{pkg_url}')
-        #logger.warning(f'[!] No homepage for {pkg_url}')
+        pass
+        # logger.warning(f'[err] err:{e} homepage not found pkg_url:{pkg_url}')
     try:
         githublink = soup.select_one('.vertical-tabs__tabs > div:nth-child(2) > ul:nth-child(2) > li:nth-child(2) > a:nth-child(1)',href=True).attrs['href']
         githublink = githublink.replace('/tags','')
         return {'github':githublink, 'homepage':homepage}
     except AttributeError as e:
-        logger.warning(f'[err] err:{e} pkg_url:{pkg_url}')
-    return {'github':githublink, 'homepage':homepage}    
+        pass
+        # logger.warning(f'[err] err:{e} gh link not found pkg_url:{pkg_url} h:{homepage}')
+    return {'github':githublink, 'homepage':homepage}
