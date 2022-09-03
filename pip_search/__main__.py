@@ -5,10 +5,18 @@ from urllib.parse import urlencode
 from rich.console import Console
 from rich.table import Table
 
-from pip_search.pip_search import config, search
-
-from . import __version__
-from .utils import check_version
+try:
+    from pip_search.pip_search import config, search
+except ModuleNotFoundError:
+    from pip_search import config, search
+try:
+    from . import __version__
+except ImportError:
+    __version__ = "0.0.0"
+try:
+    from .utils import check_version
+except ImportError:
+    from utils import check_version
 
 
 def text_output(result, query, args):
@@ -32,6 +40,7 @@ def table_output(result, query, args):
     table.add_column("Version", style="bold yellow")
     table.add_column("Released", style="bold green")
     table.add_column("Description", style="bold blue")
+    table.add_column("GH info", style="bold blue")
     emoji = ":open_file_folder:"    
     for package in result:
         checked_version = check_version(package.name)
@@ -46,6 +55,7 @@ def table_output(result, query, args):
             package.version,
             package.released_date_str(args.date_format),
             package.description,
+            f's:{package.stars} f:{package.forks} w:{package.watchers}'
         )
     console = Console()
     console.print(table)
@@ -96,6 +106,7 @@ def main():
         ap.print_help()
         sys.exit(1)
     text_output(res, query, args)
+    table_output(res, query, args)
 
 
 
