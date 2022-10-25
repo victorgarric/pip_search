@@ -166,11 +166,14 @@ def get_repo_info(repo, info, auth=None):
                 logger.error(f'[gri] {e} r:{r.status_code} len:{len(r.content)} apiurl:{apiurl} rj:{r.json()}')
             except KeyError as e:
                 logger.error(f'[gri] {e} r:{r.status_code} len:{len(r.content)} apiurl:{apiurl} rj:{r.json()}')
-            info['forks'] = str(r.json()["forks_count"])
-            info['watchers'] = str(r.json()["watchers_count"])
-            info['github_link'] = repo
-            info['set'] = True
-            return info
+            try:
+                info['forks'] = str(r.json()["forks_count"])
+                info['watchers'] = str(r.json()["watchers_count"])
+                info['github_link'] = repo
+                info['set'] = True
+                return info
+            except TypeError as err:
+                logger.error(f'[gri] {err} r:{r.status_code} len:{len(r.content)} apiurl:{apiurl} rj:{r.json()}')
         else:
             if DEBUG:
                 logger.warning(f'[gri] {r.status_code} repo:{repo} apiurl:{apiurl}')
