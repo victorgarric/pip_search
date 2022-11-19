@@ -29,13 +29,7 @@ def text_output(result, query, args):
         print(f'\tdescription: {package.description}')
 
 def table_output(result, query, args):
-    table = Table(
-        title=(
-            "[not italic]:snake:[/] [bold][magenta]"
-            f"{config.api_url}?{urlencode({'q': query})}"
-            "[/] [not italic]:snake:[/]"
-        )
-    )
+    table = Table(title=(f"[not italic]:snake:[/] [bold][magenta] {config.api_url}?{urlencode({'q': query})} [/] [not italic]:snake:[/]"))
     table.add_column("Package", style="cyan", no_wrap=True)
     table.add_column("Version", style="bold yellow")
     table.add_column("Released", style="bold green")
@@ -47,57 +41,19 @@ def table_output(result, query, args):
         if checked_version == package.version:
             package.version = f"[bold cyan]{package.version} ==[/]"
         elif checked_version is not False:
-            package.version = (
-                f"{package.version} > [bold purple]{checked_version}[/]"
-            )
-        table.add_row(
-            f"[link={package.link}]{emoji}[/link] {package.name}",
-            package.version,
-            package.released_date_str(args.date_format),
-            package.description,
-            f's:{package.stars} f:{package.forks} w:{package.watchers}'
-        )
+            package.version = (f"{package.version} > [bold purple]{checked_version}[/]")
+        table.add_row(f"[link={package.link}]{emoji}[/link] {package.name}",package.version,package.released_date_str(args.date_format),package.description,f's:{package.stars} f:{package.forks} w:{package.watchers}')
     console = Console()
     console.print(table)
 
 
 def main():
-    ap = argparse.ArgumentParser(
-        prog="pip_search", description="Search for packages on PyPI"
-    )
-    ap.add_argument(
-        "-s",
-        "--sort",
-        type=str,
-        const="name",
-        nargs="?",
-        choices=["name", "version", "released"],
-        help="sort results by package name, version or \
-                        release date (default: %(const)s)",
-    )
-    ap.add_argument(
-        "query",
-        nargs="*",
-        type=str,
-        help="terms to search pypi.org package repository",
-    )
-    ap.add_argument(
-        "--version",
-        action="version",
-        version=f"%(prog)s {__version__}",
-    )
-    ap.add_argument(
-        "--date_format",
-        type=str,
-        default="%d-%m-%Y",
-        nargs="?",
-        help="format for release date, (default: %(default)s)",
-    )
-    ap.add_argument(
-        "--auth",
-        action="store_true",
-        help="use github authentication",
-    )
+    ap = argparse.ArgumentParser(prog="pip_search", description="Search for packages on PyPI")
+    ap.add_argument("-s","--sort",type=str,const="name",nargs="?",choices=["name", "version", "released"],help="sort results by package name, version or release date (default: %(const)s)")
+    ap.add_argument("query", nargs="*", type=str, help="terms to search pypi.org package repository")
+    ap.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+    ap.add_argument("--date_format", type=str, default="%d-%m-%Y", nargs="?", help="format for release date, (default: %(default)s)")
+    ap.add_argument("--extra", action="store_true", default=False, help="get extra github info")
     args = ap.parse_args()
     query = " ".join(args.query)
     result = search(query, opts=args)

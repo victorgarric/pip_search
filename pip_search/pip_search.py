@@ -38,9 +38,7 @@ class Package:
 
     def __post_init__(self, link: str = None):
         self.link = link or config.link_defualt_format.format(package=self)
-        self.released_date = datetime.strptime(
-            self.released, "%Y-%m-%dT%H:%M:%S%z"
-        )
+        self.released_date = datetime.strptime(self.released, "%Y-%m-%dT%H:%M:%S%z")
         self.stars: str = ''
         self.forks: str = ''
         self.watchers: str = ''
@@ -64,9 +62,7 @@ class Package:
         self.info_set = True
 
 
-def search(
-    query: str, opts: Union[dict, Namespace] = {}
-) -> Generator[Package, None, None]:
+def search(query: str, opts: Union[dict, Namespace] = {}) -> Generator[Package, None, None]:
     """Search for packages matching the query
 
     Yields:
@@ -80,61 +76,31 @@ def search(
         soup = BeautifulSoup(r.text, "html.parser")
         snippets += soup.select('a[class*="package-snippet"]')
     authparam = None
-    if 'auth' in opts:
+    if opts.extra:
         GITHUBAPITOKEN = os.getenv('GITHUBAPITOKEN')
         GITHUB_USERNAME = os.getenv('GITHUB_USERNAME')
         authparam = HTTPBasicAuth(GITHUB_USERNAME, GITHUBAPITOKEN)
 
     if "sort" in opts:
         if opts.sort == "name":
-            snippets = sorted(
-                snippets,
-                key=lambda s: s.select_one('span[class*="package-snippet__name"]').text.strip(),
-            )
+            snippets = sorted(snippets,key=lambda s: s.select_one('span[class*="package-snippet__name"]').text.strip())
         elif opts.sort == "version":
             from pkg_resources import parse_version
-
-            snippets = sorted(
-                snippets,
-                key=lambda s: parse_version(
-                    s.select_one('span[class*="package-snippet__version"]').text.strip()
-                ),
-            )
+            snippets = sorted(snippets,key=lambda s: parse_version(s.select_one('span[class*="package-snippet__version"]').text.strip()))
         elif opts.sort == "released":
-            snippets = sorted(
-                snippets,
-                key=lambda s: s.select_one('span[class*="package-snippet__created"]').find(
-                    "time"
-                )["datetime"],
-            )
+            snippets = sorted(snippets,key=lambda s: s.select_one('span[class*="package-snippet__created"]').find("time")["datetime"])
 
     for snippet in snippets:
         link = urljoin(config.api_url, snippet.get("href"))
-        package = re.sub(
-            r"\s+", " ", snippet.select_one('span[class*="package-snippet__name"]').text.strip()
-        )
-        version = re.sub(
-            r"\s+",
-            " ",
-            snippet.select_one('span[class*="package-snippet__version"]').text.strip(),
-        )
-        released = re.sub(
-            r"\s+",
-            " ",
-
-            snippet.select_one('span[class*="package-snippet__created"]').find("time")[
-                "datetime"
-            ],
-        )
-        description = re.sub(
-            r"\s+",
-            " ",
-            snippet.select_one('p[class*="package-snippet__description"]').text.strip(),
-        )
-        info = get_github_info(link, authparam)
+        package = re.sub(r"\s+", " ", snippet.select_one('span[class*="package-snippet__name"]').text.strip())
+        version = re.sub(r"\s+"," ",snippet.select_one('span[class*="package-snippet__version"]').text.strip())
+        released = re.sub(r"\s+"," ",snippet.select_one('span[class*="package-snippet__created"]').find("time")["datetime"])
+        description = re.sub(r"\s+"," ",snippet.select_one('p[class*="package-snippet__description"]').text.strip())
         pack = Package(package, version, released, description, link)
-        if info['set']:
-            pack.set_gh_info(info)
+        if opts.extra:
+            info = get_github_info(link, authparam)
+            if info['set']:
+                pack.set_gh_info(info)
         yield pack #Package(package, version, released, description, link, links)
 
 def get_repo_info(repo, info, auth=None):
