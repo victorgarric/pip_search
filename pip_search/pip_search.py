@@ -100,7 +100,8 @@ def search(query: str, opts: Union[dict, Namespace] = {}) -> Generator[Package, 
         pack = Package(package, version, released, description, link)
         if opts.extra:
             info = get_github_info(link, authparam, session)
-            pack.set_gh_info(info)
+            if info:
+                pack.set_gh_info(info)
                 # logger.debug(f'[s] snippet {s} / {len(snippets)} link: {link}')
         yield pack #Package(package, version, released, description, link, links)
 
@@ -141,10 +142,13 @@ def get_repo_info(repo, auth, session):
             return info
 
 def get_github_info(repolink, authparam, session):
-
+    gh_link = None
     gh_link = get_links(repolink, session)
-    info = get_repo_info(repo=gh_link['github'], auth=authparam, session=session)
-    return info
+    if gh_link:
+        info = get_repo_info(repo=gh_link['github'], auth=authparam, session=session)
+        return info
+    else:
+        return None
 
 def get_links(pkg_url, session):
     # s = requests.session()
@@ -161,14 +165,17 @@ def get_links(pkg_url, session):
             githublink = homepage
             githublink = githublink.replace('/tags','')
             return {'github':githublink, 'homepage':homepage}
+        else:
+            return None
     except AttributeError as e:
-        pass
-        # logger.warning(f'[err] err:{e} homepage not found pkg_url:{pkg_url}')
-    try:
-        githublink = soup.select_one('.vertical-tabs__tabs > div:nth-child(2) > ul:nth-child(2) > li:nth-child(2) > a:nth-child(1)',href=True).attrs['href']
-        githublink = githublink.replace('/tags','')
-        return {'github':githublink, 'homepage':homepage}
-    except AttributeError as e:
-        pass
-        # logger.warning(f'[err] err:{e} gh link not found pkg_url:{pkg_url} h:{homepage}')
-    return {'github':githublink, 'homepage':homepage}
+        #pass
+        logger.warning(f'[err] err:{e} homepage not found pkg_url:{pkg_url}')
+        return None
+    # try:
+    #     githublink = soup.select_one('.vertical-tabs__tabs > div:nth-child(2) > ul:nth-child(2) > li:nth-child(2) > a:nth-child(1)',href=True).attrs['href']
+    #     githublink = githublink.replace('/tags','')
+    #     return {'github':githublink, 'homepage':homepage}
+    # except AttributeError as e:
+    #     # pass
+    #     logger.warning(f'[err] err:{e} gh link not found pkg_url:{pkg_url} h:{homepage}')
+    # return {'github':githublink, 'homepage':homepage}
