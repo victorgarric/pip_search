@@ -35,7 +35,7 @@ def table_output(result, query, args):
     table.add_column("Released", style="bold green")
     table.add_column("Description", style="bold blue")
     table.add_column("GH info", style="bold blue")
-    emoji = ":open_file_folder:"    
+    emoji = ":open_file_folder:"
     for package in result:
         checked_version = check_version(package.name)
         if checked_version == package.version:
@@ -46,25 +46,35 @@ def table_output(result, query, args):
     console = Console()
     console.print(table)
 
-
 def main():
     ap = argparse.ArgumentParser(prog="pip_search", description="Search for packages on PyPI")
-    ap.add_argument("-s","--sort",type=str,const="name",nargs="?",choices=["name", "version", "released"],help="sort results by package name, version or release date (default: %(const)s)")
+    ap.add_argument("-s","--sort",type=str, const="name",nargs="?",choices=['name', 'version', 'released', 'stars','watchers','forks'],help="sort results by package name, version or release date (default: %(const)s)")
     ap.add_argument("query", nargs="*", type=str, help="terms to search pypi.org package repository")
     ap.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     ap.add_argument("--date_format", type=str, default="%d-%m-%Y", nargs="?", help="format for release date, (default: %(default)s)")
     ap.add_argument("--extra", action="store_true", default=False, help="get extra github info")
     args = ap.parse_args()
-    query = " ".join(args.query)
-    result = search(query, opts=args)
-    res = [k for k in result]
     if not args.query:
         ap.print_help()
         sys.exit(1)
-    text_output(res, query, args)
+    query = " ".join(args.query)
+    # result = search(query, opts=args)
+    res = [k for k in search(query, opts=args)]
+    if 'sort' in args:
+        if args.sort == 'released':
+            res = [k for k in sorted(res, key=lambda s: s.released)]
+        if args.sort == 'name':
+            res = [k for k in sorted(res, key=lambda s: s.name)]
+        if args.sort == 'version':
+            res = [k for k in sorted(res, key=lambda s: s.version)]
+        if args.sort == 'stars':
+            res = [k for k in sorted(res, key=lambda s: s.stars)]
+        if args.sort == 'watchers':
+            res = [k for k in sorted(res, key=lambda s: s.watchers)]
+        if args.sort == 'forks':
+            res = [k for k in sorted(res, key=lambda s: s.forks)]
+    # text_output(res, query, args)
     table_output(res, query, args)
-
-
 
 if __name__ == "__main__":
     sys.exit(main())
