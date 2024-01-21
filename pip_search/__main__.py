@@ -51,7 +51,7 @@ def table_output(result, query, args):
             table.add_row(f"{package.name}",package.version,package.released_date_str(args.date_format),package.description, package.link, f's:{package.stars} f:{package.forks} w:{package.watchers}')
         elif args.links:
             table.add_row(f"{package.name}",package.version,package.released_date_str(args.date_format),package.description, package.link )
-        elif args.extra:
+        elif args.extra: 
             table.add_row(f"{package.name}",package.version,package.released_date_str(args.date_format),package.description, f's:{package.stars} f:{package.forks} w:{package.watchers}')
         else:
             table.add_row(f"{package.name}",package.version,package.released_date_str(args.date_format),package.description)
