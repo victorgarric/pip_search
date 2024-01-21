@@ -61,7 +61,7 @@ class Package:
         self.github_link = info['github_link']
         self.info_set = True
 
-
+# todo add url to results
 def search(query: str, opts: Union[dict, Namespace] = {}) -> Generator[Package, None, None]:
     """Search for packages matching the query
 

@@ -34,7 +34,10 @@ def table_output(result, query, args):
     table.add_column("Version", style="bold yellow")
     table.add_column("Released", style="bold green")
     table.add_column("Description", style="bold blue")
-    table.add_column("GH info", style="bold blue")
+    if args.links:
+        table.add_column("Link", style="bold blue")
+    if args.extra:
+        table.add_column("GH info", style="bold blue")
     emoji = ":open_file_folder:"
     for package in result:
         checked_version = check_version(package.name)
@@ -42,7 +45,16 @@ def table_output(result, query, args):
             package.version = f"[bold cyan]{package.version} ==[/]"
         elif checked_version is not False:
             package.version = (f"{package.version} > [bold purple]{checked_version}[/]")
-        table.add_row(f"[link={package.link}]{emoji}[/link] {package.name}",package.version,package.released_date_str(args.date_format),package.description,f's:{package.stars} f:{package.forks} w:{package.watchers}')
+        #table.add_row(f"[link={package.link}]{emoji}[/link] {package.name}",package.version,package.released_date_str(args.date_format),package.description,f's:{package.stars} f:{package.forks} w:{package.watchers}')
+        tbl_row = f''
+        if args.links and args.extra:
+            table.add_row(f"{package.name}",package.version,package.released_date_str(args.date_format),package.description, package.link, f's:{package.stars} f:{package.forks} w:{package.watchers}')
+        elif args.links:
+            table.add_row(f"{package.name}",package.version,package.released_date_str(args.date_format),package.description, package.link )
+        elif args.extra:
+            table.add_row(f"{package.name}",package.version,package.released_date_str(args.date_format),package.description, f's:{package.stars} f:{package.forks} w:{package.watchers}')
+        else:
+            table.add_row(f"{package.name}",package.version,package.released_date_str(args.date_format),package.description)
     console = Console()
     console.print(table)
 
@@ -52,7 +64,8 @@ def main():
     ap.add_argument("query", nargs="*", type=str, help="terms to search pypi.org package repository")
     ap.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     ap.add_argument("--date_format", type=str, default="%d-%m-%Y", nargs="?", help="format for release date, (default: %(default)s)")
-    ap.add_argument("--extra", action="store_true", default=False, help="get extra github info")
+    ap.add_argument("-e", "--extra", action="store_true", default=False, help="get extra github info")
+    ap.add_argument("-l", "--links", action="store_true", default=False, help="show links")
     args = ap.parse_args()
     if not args.query:
         ap.print_help()
