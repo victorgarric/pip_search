@@ -103,10 +103,10 @@ def search(query: str, opts: Union[dict, Namespace] = {}) -> Generator[Package, 
             if info:
                 pack.set_gh_info(info)
                 # logger.debug(f'[s] snippet {s} / {len(snippets)} link: {link}')
-        yield pack #Package(package, version, released, description, link, links)
+        yield pack  # Package(package, version, released, description, link, links)
 
 def get_repo_info(repo, auth, session):
-    #info = {'stars':'', 'forks':'', 'watchers':'', 'set':False}
+    # info = {'stars':'', 'forks':'', 'watchers':'', 'set':False}
     info = {'stars':0, 'forks':0, 'watchers':0, 'set':False, 'github_link':''}
     try:
         reponame = repo.split('github.com/')[1].rstrip('/')
@@ -122,7 +122,7 @@ def get_repo_info(repo, auth, session):
         return info
     if r.status_code == 404:
         if DEBUG:
-            logger.warning(f'[r] {r.status_code} url: {repo} r: {reponame} apiurl: {apiurl} not found' )
+            logger.warning(f'[r] {r.status_code} url: {repo} r: {reponame} apiurl: {apiurl} not found')
         return info
     if r.status_code == 403:
         if DEBUG:
@@ -130,7 +130,7 @@ def get_repo_info(repo, auth, session):
         return info
     if r.status_code == 200:
         try:
-            info['stars'] = r.json().get("stargazers_count",0) # str(r.json()["stargazers_count"])
+            info['stars'] = r.json().get("stargazers_count",0)  # str(r.json()["stargazers_count"])
             info['forks'] = r.json().get("forks_count",0)
             info['watchers'] = r.json().get("watchers_count",0)
             info['github_link'] = repo
@@ -158,7 +158,9 @@ def get_links(pkg_url, session):
     githublink = ''
     try:
         # .vertical-tabs__tabs > div:nth-child(2) > ul:nth-child(2) > li:nth-child(2) > a:nth-child(1)
-        homepage = soup.select_one('.vertical-tabs__tabs > div:nth-child(2) > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)',href=True).attrs['href']
+        # '.vertical-tabs__tabs > div:nth-child(2) > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)'
+        csspath = '.vertical-tabs__tabs > div:nth-child(3) > ul:nth-child(4) > li:nth-child(1) > a:nth-child(1)'
+        homepage = soup.select_one(csspath,href=True).attrs['href']
         if 'issues' in homepage:
             homepage = soup.select_one('.vertical-tabs__tabs > div:nth-child(2) > ul:nth-child(2) > li:nth-child(2) > a:nth-child(1)',href=True).attrs['href']
         if 'github' in homepage:
@@ -168,7 +170,7 @@ def get_links(pkg_url, session):
         else:
             return None
     except AttributeError as e:
-        #pass
+        # pass
         logger.warning(f'[err] err:{e} homepage not found pkg_url:{pkg_url}')
         return None
     # try:
