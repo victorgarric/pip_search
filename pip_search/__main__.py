@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import argparse
 import sys
 from urllib.parse import urlencode
@@ -14,13 +15,13 @@ try:
 except ImportError:
     __version__ = "0.0.0"
 try:
-    from .utils import check_version
+    from .utils import check_version, check_local_libs
 except ImportError:
-    from utils import check_version
+    from utils import check_version, check_local_libs
 
 
 def text_output(result, query, args):
-    #res = [k for k in result]
+    # res = [k for k in result]
     for package in result:
         if package.info_set:
             print(f'{package.name} l:{package.link} ver:{package.version} rel:{package.released_date_str(args.date_format)} gh:{package.github_link} s:{package.stars} f:{package.forks} w:{package.watchers}')
@@ -38,20 +39,20 @@ def table_output(result, query, args):
         table.add_column("Link", style="bold blue")
     if args.extra:
         table.add_column("GH info", style="bold blue")
-    emoji = ":open_file_folder:"
+    # emoji = ":open_file_folder:"
     for package in result:
         checked_version = check_version(package.name)
         if checked_version == package.version:
             package.version = f"[bold cyan]{package.version} ==[/]"
         elif checked_version is not False:
             package.version = (f"{package.version} > [bold purple]{checked_version}[/]")
-        #table.add_row(f"[link={package.link}]{emoji}[/link] {package.name}",package.version,package.released_date_str(args.date_format),package.description,f's:{package.stars} f:{package.forks} w:{package.watchers}')
-        tbl_row = f''
+        # table.add_row(f"[link={package.link}]{emoji}[/link] {package.name}",package.version,package.released_date_str(args.date_format),package.description,f's:{package.stars} f:{package.forks} w:{package.watchers}')
+        # tbl_row = f''
         if args.links and args.extra:
             table.add_row(f"{package.name}",package.version,package.released_date_str(args.date_format),package.description, package.link, f's:{package.stars} f:{package.forks} w:{package.watchers}')
         elif args.links:
-            table.add_row(f"{package.name}",package.version,package.released_date_str(args.date_format),package.description, package.link )
-        elif args.extra: 
+            table.add_row(f"{package.name}",package.version,package.released_date_str(args.date_format),package.description, package.link)
+        elif args.extra:
             table.add_row(f"{package.name}",package.version,package.released_date_str(args.date_format),package.description, f's:{package.stars} f:{package.forks} w:{package.watchers}')
         else:
             table.add_row(f"{package.name}",package.version,package.released_date_str(args.date_format),package.description)
@@ -66,7 +67,15 @@ def main():
     ap.add_argument("--date_format", type=str, default="%d-%m-%Y", nargs="?", help="format for release date, (default: %(default)s)")
     ap.add_argument("-e", "--extra", action="store_true", default=False, help="get extra github info")
     ap.add_argument("-l", "--links", action="store_true", default=False, help="show links")
+    ap.add_argument("--chklocallibs", action="store_true", default=False, help="check local libs ~/lib/pythonxxx/site-packages ")
     args = ap.parse_args()
+    if args.chklocallibs:
+        libpath = '/home/kth/.local/lib/python3.12/site-packages/'
+        outdated_libs,error_list = check_local_libs(libpath)
+        print(f'outdated libs: {len(outdated_libs)} errors: {len(error_list)} \n')
+        print(f'\noutdated libs: {outdated_libs}\n')
+        print(f'\nerrors: {error_list}\n')
+        sys.exit(0)
     if not args.query:
         ap.print_help()
         sys.exit(1)

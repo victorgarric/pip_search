@@ -74,7 +74,7 @@ def search(query: str, opts: Union[dict, Namespace] = {}) -> Generator[Package, 
         params = {"q": query, "page": page}
         r = session.get(config.api_url, params=params)
         soup = BeautifulSoup(r.text, "html.parser")
-        snippets += soup.select('a[class*="package-snippet"]')
+        snippets += soup.select('a[class*="package- snippet"]')
         logger.debug(f'[s] p:{page} snippets={len(snippets)} query={query} ')
     authparam = None
     if opts.extra:
@@ -181,3 +181,5 @@ def get_links(pkg_url, session):
     #     # pass
     #     logger.warning(f'[err] err:{e} gh link not found pkg_url:{pkg_url} h:{homepage}')
     # return {'github':githublink, 'homepage':homepage}
+
+
