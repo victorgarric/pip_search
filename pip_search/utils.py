@@ -43,15 +43,22 @@ def read_metafile(distpath):
 # : res = [k for k in search(name_list[0],args) if k.name == name_list[0]]
 
 def get_local_libs(libpath):
-    dists_found = [k for k in glob.glob(libpath+'**',recursive=False, include_hidden=True) if os.path.isdir(k) and 'dist-info' in k and os.path.exists(k+'/METADATA')]
-    print(f'dists_found: {len(dists_found)} in {libpath}')
+    alldirs = sorted([k for k in glob.glob(libpath+'**',recursive=False, include_hidden=True) if os.path.isdir(k)])
+    dists_found = [k for k in alldirs if os.path.exists(k+'/METADATA')]
+    # dists_found = [k for k in glob.glob(libpath+'**',recursive=False, include_hidden=True) if os.path.isdir(k) and 'dist-info' in k and os.path.exists(k+'/METADATA')]
+    print(f'alldirs: {len(alldirs)} dists_found: {len(dists_found)} in {libpath}')
     name_list = []
+    nodist_list = []
     for dist in dists_found:
         distname,version,distpath = read_metafile(dist)
         if distname:
             name_list.append({'name':distname,'version':version, 'distpath':distpath})
         else:
             print(f'no name found in {dist}')
+    # make a list of folders with no METADATA file
+    tmplist = sorted([k for k in alldirs if 'dist-info' not in k])
+    nodistlist = [k for k in tmplist if k.split('/')[-1] in [x['name'] for x in name_list]]
+    nodist_list = [k for k in alldirs if k.split('/')[-1] not in dists_found]
     return name_list
 
 def check_pypi_version(libname):

@@ -70,7 +70,7 @@ def main():
     ap.add_argument("--chklocallibs", action="store_true", default=False, help="check local libs ~/lib/pythonxxx/site-packages ")
     args = ap.parse_args()
     if args.chklocallibs:
-        libpath = '/home/kth/.local/lib/python3.12/site-packages/'
+        libpath = '~/.local/lib/python3.12/site-packages/'
         outdated_libs,error_list = check_local_libs(libpath)
         print(f'outdated libs: {len(outdated_libs)} errors: {len(error_list)} \n')
         print(f'\noutdated libs: {outdated_libs}\n')
