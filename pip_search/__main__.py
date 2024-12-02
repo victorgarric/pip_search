@@ -21,8 +21,8 @@ def main():
         type=str,
         const="name",
         nargs="?",
-        choices=["name", "version", "released"],
-        help="sort results by package name, version or \
+        choices=["name", "released"],
+        help="sort results by package name or \
                         release date (default: %(const)s)",
     )
     ap.add_argument(

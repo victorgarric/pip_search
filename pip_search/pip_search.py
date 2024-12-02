@@ -70,15 +70,6 @@ def search(
                 snippets,
                 key=lambda s: s.select_one('span[class*="package-snippet__name"]').text.strip(),
             )
-        elif opts.sort == "version":
-            from pkg_resources import parse_version
-
-            snippets = sorted(
-                snippets,
-                key=lambda s: parse_version(
-                    s.select_one('span[class*="package-snippet__version"]').text.strip()
-                ),
-            )
         elif opts.sort == "released":
             snippets = sorted(
                 snippets,
@@ -92,11 +83,18 @@ def search(
         package = re.sub(
             r"\s+", " ", snippet.select_one('span[class*="package-snippet__name"]').text.strip()
         )
-        version = re.sub(
-            r"\s+",
-            " ",
-            snippet.select_one('span[class*="package-snippet__version"]').text.strip(),
-        )
+
+        # Get version info from https://pypi.org/project/PACKAGE_NAME 
+        response = s.get(link)
+        package_page = BeautifulSoup(response.text, "html.parser")
+        version_element = package_page.select_one('h1.package-header__name')
+        version = version_element.text.split()[-1] if version_element else "Unknown"
+
+        # version = re.sub(
+        #     r"\s+",
+        #     " ",
+        #     snippet.select_one('span[class*="package-snippet__version"]').text.strip(),
+        # )
         released = re.sub(
             r"\s+",
             " ",

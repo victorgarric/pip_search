@@ -9,7 +9,6 @@ Use with `pip_search anything`
 
 You can specify sorting options : 
 - `pip_search -s name`
-- `pip_search -s version`
 - `pip_search -s released`
 
 To use as the traditional `pip search <keywords>` method, add this alias to your **.zshrc, .bashrc, .bash_profile, etc.**
