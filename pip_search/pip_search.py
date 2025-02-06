@@ -4,6 +4,8 @@ from dataclasses import InitVar, dataclass
 from datetime import datetime
 from typing import Generator, Union
 from urllib.parse import urljoin
+import string
+import hashlib
 
 import requests
 from bs4 import BeautifulSoup
@@ -58,6 +60,48 @@ def search(
     """
     snippets = []
     s = requests.Session()
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0",
+    }
+    params = {"q": query}
+    r = s.get(config.api_url, params=params, headers=headers)
+
+    # Get script.js url
+    pattern = re.compile(r"/(.*)/script.js")
+    path = pattern.findall(r.text)[0]
+    script_url = f"https://pypi.org/{path}/script.js"
+
+    r = s.get(script_url)
+
+    # Find the PoW data from script.js
+    # TODO: make the pattern more robust
+    pattern = re.compile(
+        r'init\(\[\{"ty":"pow","data":\{"base":"(.+?)","hash":"(.+?)","hmac":"(.+?)","expires":"(.+?)"\}\}\], "(.+?)"'
+    )
+    base, hash, hmac, expires, token = pattern.findall(r.text)[0]
+
+    # Compute the PoW answer
+    answer = ""
+    characters = string.ascii_letters + string.digits
+    for c1 in characters:
+        for c2 in characters:
+            c = base + c1 + c2
+            if hashlib.sha256(c.encode()).hexdigest() == hash:
+                answer = c1 + c2
+                break
+        if answer:
+            break
+
+    # Send the PoW answer
+    back_url = f"https://pypi.org/{path}/fst-post-back"
+    data = {
+        "token": token,
+        "data": [
+            {"ty": "pow", "base": base, "answer": answer, "hmac": hmac, "expires": expires}
+        ],
+    }
+    r = s.post(back_url, json=data)
+
     for page in range(1, config.page_size + 1):
         params = {"q": query, "page": page}
         r = s.get(config.api_url, params=params)
