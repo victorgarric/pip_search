@@ -1,14 +1,24 @@
 from typing import Union
+import argparse
 import glob
 import os
 import requests
 from bs4 import BeautifulSoup
+from loguru import logger
 
 try:
     from importlib.metadata import PackageNotFoundError, distribution
-except ImportError:
+except ImportError as e:
+    # logger.warning(f"pip_search importlib.metadata module not found: {e} {type(e)}")
     from pkg_resources import DistributionNotFound as PackageNotFoundError
     from pkg_resources import get_distribution as distribution
+
+
+try:
+    from . import __version__
+except (ModuleNotFoundError, ImportError) as e:
+    # logger.warning(f"pip_search module not found: {e} {type(e)}")
+    __version__ = "0.0.0"
 
 
 def check_version(package_name: str) -> Union[str, bool]:
@@ -100,3 +110,15 @@ def check_local_libs(libpath):
     print(f'outdated libs: {len(outdated_libs)} error list: {len(error_list)}')
     return outdated_libs, error_list
 
+def get_args():
+    ap = argparse.ArgumentParser(prog="pip_search", description="Search for packages on PyPI")
+    ap.add_argument("-s","--sort",type=str, const="name",nargs="?",choices=['name', 'version', 'released', 'stars','watchers','forks'],help="sort results by package name, version or release date (default: %(const)s)")
+    ap.add_argument("query", nargs="*", type=str, help="terms to search pypi.org package repository")
+    ap.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+    ap.add_argument("--date_format", type=str, default="%d-%m-%Y", nargs="?", help="format for release date, (default: %(default)s)")
+    ap.add_argument("-e", "--extra", action="store_true", default=False, help="get extra github info")
+    ap.add_argument("-d", "--debug", action="store_true", default=False, help="debugmode")
+    ap.add_argument("-l", "--links", action="store_true", default=False, help="show links")
+    ap.add_argument("--chklocallibs", action="store_true", default=False, help="check local libs ~/lib/pythonxxx/site-packages ")
+    args = ap.parse_args()
+    return args
