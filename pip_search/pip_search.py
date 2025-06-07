@@ -4,6 +4,8 @@ import os
 import time
 import json
 import random
+import string
+import hashlib
 from loguru import logger
 from argparse import Namespace
 from dataclasses import InitVar, dataclass
@@ -17,14 +19,6 @@ from bs4 import BeautifulSoup
 
 import socket
 from urllib3.connection import HTTPConnection
-
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import WebDriverException
-import selenium.webdriver.support.expected_conditions as EC  # noqa
-from selenium.webdriver.support.wait import WebDriverWait
-import undetected_chromedriver as uc
 
 HTTPConnection.default_socket_options = HTTPConnection.default_socket_options + [
     (socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1),
@@ -95,23 +89,66 @@ class Package:
 
 # todo add url to results
 def search(args, config, opts: Union[dict, Namespace] = {}) -> Generator[Package, None, None]:
-    try:
-        browser = uc.Chrome(headless=True,use_subprocess=True)
-    except TypeError as e:
-        logger.error(f"[search] TypeError: {e} using default Chrome")
-        try:
-            browser = webdriver.Chrome()
-        except Exception as e:
-            logger.error(f"[search] Exception: {e} using default Chrome")
-            sys.exit(1)
     query = args.query
     query = "".join(query)
     qurl = config.api_url + f"?q={query}"
-    browser.get(qurl)
-    time.sleep(5)
-    soup = BeautifulSoup(browser.page_source, "html.parser")
-    snippets = soup.select('a[class*="package-snippet"]')
-    logger.debug(f'qurl: {qurl} soup: {len(soup)} snippets: {len(snippets)}')
+
+    # time.sleep(5)
+
+    snippets = []
+    session = requests.Session()
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0",
+    }
+    params = {"q": query}
+    r = session.get(config.api_url, params=params, headers=headers)
+
+    # Get script.js url
+    pattern = re.compile(r"/(.*)/script.js")
+    path = pattern.findall(r.text)[0]
+    script_url = f"https://pypi.org/{path}/script.js"
+
+    r = session.get(script_url)
+
+    # Find the PoW data from script.js
+    # TODO: make the pattern more robust
+    pattern = re.compile(
+        r'init\(\[\{"ty":"pow","data":\{"base":"(.+?)","hash":"(.+?)","hmac":"(.+?)","expires":"(.+?)"\}\}\], "(.+?)"'
+    )
+    base, hash, hmac, expires, token = pattern.findall(r.text)[0]
+
+    # Compute the PoW answer
+    answer = ""
+    characters = string.ascii_letters + string.digits
+    for c1 in characters:
+        for c2 in characters:
+            c = base + c1 + c2
+            if hashlib.sha256(c.encode()).hexdigest() == hash:
+                answer = c1 + c2
+                break
+        if answer:
+            break
+
+    # Send the PoW answer
+    back_url = f"https://pypi.org/{path}/fst-post-back"
+    data = {
+        "token": token,
+        "data": [
+            {"ty": "pow", "base": base, "answer": answer, "hmac": hmac, "expires": expires}
+        ],
+    }
+    r = session.post(back_url, json=data)
+
+    # soup = BeautifulSoup(browser.page_source, "html.parser")
+    for page in range(1, config.page_size + 1):
+        params = {"q": query, "page": page}
+        r = session.get(config.api_url, params=params)
+        soup = BeautifulSoup(r.text, "html.parser")
+        snippets += soup.select('a[class*="package-snippet"]')
+        logger.debug(f'[s] p:{page} snippets={len(snippets)} query={query} ')
+
+    # snippets = soup.select('a[class*="package-snippet"]')
+    # logger.debug(f'qurl: {qurl} soup: {len(soup)} snippets: {len(snippets)}')
     authparam = None
     if opts.extra:
         GITHUBAPITOKEN = os.getenv("GITHUBAPITOKEN")
@@ -126,7 +163,7 @@ def search(args, config, opts: Union[dict, Namespace] = {}) -> Generator[Package
         description = re.sub(r"\s+"," ",snippet.select_one('p[class*="package-snippet__description"]').text.strip())
         pack = Package(package, version, released, description, link)
         if opts.extra:
-            info = get_github_info(link, authparam, browser)
+            info = get_github_info(link, authparam)
             if info:
                 pack.set_gh_info(info)
         if args.debug:
@@ -179,9 +216,9 @@ def get_repo_info(repo, auth):
             return info
 
 
-def get_github_info(repolink, authparam, browser):
+def get_github_info(repolink, authparam):
     gh_link = None
-    gh_link = get_links(repolink, browser)
+    gh_link = get_links(repolink)
     if gh_link:
         info = get_repo_info(repo=gh_link["github"], auth=authparam)
         return info
@@ -189,13 +226,10 @@ def get_github_info(repolink, authparam, browser):
         return None
 
 
-def get_links(pkg_url, browser):
-    # s = requests.session()
-    # r = session.get(pkg_url)
-    browser.get(pkg_url)
-    time.sleep(1)
-    # soup = BeautifulSoup(r.text, "html.parser")
-    soup = BeautifulSoup(browser.page_source, "html.parser")
+def get_links(pkg_url):
+    s = requests.session()
+    r = s.get(pkg_url)
+    soup = BeautifulSoup(r.text, "html.parser")
     homepage = ""
     githublink = ""
     csspath = ".vertical-tabs__tabs > div:nth-child(3) > ul:nth-child(4) > li:nth-child(1) > a:nth-child(1)"
