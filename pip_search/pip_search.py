@@ -1,3 +1,4 @@
+import sys
 import re
 import os
 import time
@@ -94,8 +95,16 @@ class Package:
 
 # todo add url to results
 def search(args, config, opts: Union[dict, Namespace] = {}) -> Generator[Package, None, None]:
+    try:
+        browser = uc.Chrome(headless=True,use_subprocess=True)
+    except TypeError as e:
+        logger.error(f"[search] TypeError: {e} using default Chrome")
+        try:
+            browser = webdriver.Chrome()
+        except Exception as e:
+            logger.error(f"[search] Exception: {e} using default Chrome")
+            sys.exit(1)
     query = args.query
-    browser = uc.Chrome(headless=True,use_subprocess=True)
     query = "".join(query)
     qurl = config.api_url + f"?q={query}"
     browser.get(qurl)
