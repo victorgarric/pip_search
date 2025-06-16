@@ -52,6 +52,9 @@ Hold the **command** or **ctrl** key to click on the folder icons as a hyperlink
 
 ## Updates log
 
+- 0.0.14
+    - Passing through CAPTCHA
+
 - 0.0.13
     - Updated for version info
 
