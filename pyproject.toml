@@ -1,0 +1,78 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pip_search"
+version = "0.1.0"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+readme = "README.md"
+authors = [
+    { name = "Victor Garric", email="victor.garric@gmail.com" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "bs4>=0.0.2",
+    "httpx[http2]>=0.27.0",
+    "loguru>=0.7.3",
+    "rich>=14.3.2",
+]
+
+[project.scripts]
+pip_search = "pip_search.cli:pip_search"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pip_search"]
+
+[tool.poe.tasks]
+vulture = "vulture src tests"
+typecheck = "ty check src tests"
+lint = ["ruff:check", "typecheck"]
+fix = ["ruff:format", "ruff:fix", "typecheck"]
+test = "pytest -v --cov=pip_search --cov-report=term-missing"
+
+[tool.poe.tasks."ruff:format"]
+cmd = "ruff format"
+
+[tool.poe.tasks."ruff:check"]
+cmd = "ruff check"
+
+[tool.poe.tasks."ruff:fix"]
+cmd = "ruff check --fix"
+
+[dependency-groups]
+dev = [
+    "poethepoet>=0.41.0",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+    "pytest-mock>=3.15.1",
+    "respx>=0.22.0",
+    "ruff>=0.15.1",
+    "ty>=0.0.17",
+    "vulture>=2.14",
+]
+
+[tool.poe]
+executor = { type = "uv" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "-v",
+    "--cov=pip_search",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=xml",
+]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

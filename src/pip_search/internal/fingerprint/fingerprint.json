@@ -1,0 +1,48 @@
+{
+    "android": {"value": false},
+    "browserKind": {"value": "chrome"},
+    "browserEngineKind": {"value": "chromium"},
+    "documentFocus": {"value": false},
+    "userAgent": {
+        "value": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
+    },
+    "appVersion": {
+        "value": "5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
+    },
+    "rtt": {"value": 100},
+    "windowSize": {
+        "value": {"outerWidth": 780, "outerHeight": 580, "innerWidth": 780, "innerHeight": 493}
+    },
+    "pluginsLength": {"value": 5},
+    "pluginsArray": {"value": true},
+    "productSub": {"value": "20030107"},
+    "windowExternal": {"value": "[object External]"},
+    "mimeTypesConsistent": {"value": true},
+    "evalLength": {"value": 33},
+    "webGL": {"value": {"vendor": "WebKit", "renderer": "WebKit WebGL"}},
+    "webDriver": {"value": false},
+    "languages": {"value": [["en-US"]]},
+    "documentElementKeys": {"value": ["lang"]},
+    "functionBind": {"value": "function bind() { [native code] }"},
+    "distinctiveProps": {
+        "value": {
+            "awesomium": false,
+            "cef": false,
+            "cefsharp": false,
+            "coachjs": false,
+            "fminer": false,
+            "geb": false,
+            "nightmarejs": false,
+            "phantomas": false,
+            "phantomjs": false,
+            "playwright": false,
+            "rhino": false,
+            "selenium": false,
+            "webdriverio": false,
+            "webdriver": false,
+            "headless_chrome": false
+        }
+    },
+    "iframeSrcdoc": {"value": {"hasSelfGet": false}},
+    "notificationPermissions": {"value": false}
+}
