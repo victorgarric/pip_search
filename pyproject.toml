@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pip_search"
-version = "0.4.5"
+version = "0.4.6"
 requires-python = ">=3.14"
 license = { file = "LICENSE" }
 readme = "README.md"
