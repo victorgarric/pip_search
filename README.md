@@ -74,10 +74,14 @@ uv run poe vulture
 
 Auto-fixing some linting issues (`ruff fix`):
 
-## NG Edition
-
 ```sh
 uv run poe fix
 ```
 
 ## [Changelog](./CHANGELOG.md)
+
+## NG Edition
+
+- Make it work in 2026 and beyond
+- Improve UX and/or extend functionality (TODO)
+
