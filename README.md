@@ -82,6 +82,8 @@ uv run poe fix
 
 ## NG Edition
 
+_NG_ stands for _New generation_.
+
 - Make it work in 2026 and beyond
 - Improve UX and/or extend functionality (TODO)
 
