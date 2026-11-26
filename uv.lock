@@ -391,7 +391,7 @@ wheels = [
 ]
 
 [[package]]
-name = "pip-search"
+name = "pip-search-ng"
 version = "0.5.0"
 source = { editable = "." }
 dependencies = [
