@@ -82,8 +82,7 @@ uv run poe fix
 
 ## NG Edition
 
-_NG_ stands for _New generation_.
-
-- Make it work in 2026 and beyond
-- Improve UX and/or extend functionality (TODO)
+_NG_ (_New generation_) is about:
+- Making it work in 2026 and beyond (upstream didn't work anymore when the fork was started)
+- Improving UX and/or extending functionality (currently - TODO/undecided)
 
