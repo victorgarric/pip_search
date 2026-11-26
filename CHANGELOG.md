@@ -1,4 +1,4 @@
-### 0.5.0
+### 0.5.1
 
   - Rebrand to pip-search-ng
   - Release on PyPi
