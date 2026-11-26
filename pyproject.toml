@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "pip_search_ng"
-version = "0.5.0"
+name = "pip-search-ng"
+version = "0.5.1"
 requires-python = ">=3.14"
 license = { file = "LICENSE" }
 readme = "README.md"
