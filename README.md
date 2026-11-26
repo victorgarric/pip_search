@@ -1,6 +1,6 @@
 # pip_search
 
-__NG edition__
+[__NG edition__](#ng-edition)
 
 __Wrapping the needs of a "pip search" command necessity through PyPi.org__
 
@@ -73,6 +73,8 @@ uv run poe vulture
 ```
 
 Auto-fixing some linting issues (`ruff fix`):
+
+## NG Edition
 
 ```sh
 uv run poe fix
