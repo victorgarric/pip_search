@@ -1,4 +1,9 @@
-### 0.3.0 - 0.4.8
+### 0.5.0
+
+  - Rebrand to pip-search-ng
+  - Release on PyPi
+
+### 0.3.0 - 0.4.7
 
   - Move this log to CHANGELOG.md (from README.md)
   - README.md: update installation instructions (@God-damnit-all)

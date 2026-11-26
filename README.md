@@ -1,8 +1,8 @@
 # pip_search
 
-__Wrapping the needs of a "pip search" command necessity through PyPi.org__
+__NG edition__
 
-__2026 edition__
+__Wrapping the needs of a "pip search" command necessity through PyPi.org__
 
 See [Use Policy](./USE_POLICY.md).
 
@@ -11,7 +11,7 @@ See [Use Policy](./USE_POLICY.md).
 Install with:
 
 ```sh
-uv tool install 'pip_search @ git+https://github.com/ink-splatters/pip_search'
+uv pip install pip-search-ng
 ```
 
 Use:
