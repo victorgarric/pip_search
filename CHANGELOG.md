@@ -1,4 +1,4 @@
-### 0.3.0 - 0.4.3
+### 0.3.0 - 0.4.8
 
   - Move this log to CHANGELOG.md (from README.md)
   - README.md: update installation instructions (@God-damnit-all)
@@ -13,6 +13,7 @@
     - Refactor version fallback handling to satisfy return-count lint.
     - Cap async version-fetch connection pools to the semaphore concurrency
       limit
+    - Update dependencies and GitHub actions
 
 ### 0.2.1
 
